@@ -1,24 +1,42 @@
 package androidtown.org.a119_big_data;
 
 import android.os.Bundle;
-
-import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
+import com.kakao.vectormap.KakaoMap;
+import com.kakao.vectormap.KakaoMapReadyCallback;
+import com.kakao.vectormap.MapLifeCycleCallback;
+import com.kakao.vectormap.MapView;
 
 public class MainActivity extends AppCompatActivity {
+
+    private MapView mapView;
+    private KakaoMap kakaoMap;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
+
+        mapView = findViewById(R.id.map_view);
+
+        // 두 개의 콜백(라이프사이클, 준비완료)을 쉼표(,)로 연결하여 지도 시작
+        mapView.start(new MapLifeCycleCallback() {
+            @Override
+            public void onMapDestroy() {
+                // 지도 소멸 시 처리 (비워두셔도 됩니다)
+            }
+            @Override
+            public void onMapError(Exception e) {
+                // 지도 초기화 실패 시 에러 로그 출력
+                e.printStackTrace();
+            }
+        }, new KakaoMapReadyCallback() {
+            @Override
+            public void onMapReady(@NonNull KakaoMap map) {
+                // 지도가 성공적으로 켜지면 전역 변수에 저장
+                kakaoMap = map;
+            }
         });
     }
 }

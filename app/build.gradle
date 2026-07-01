@@ -4,20 +4,20 @@ plugins {
 
 android {
     namespace 'androidtown.org.a119_big_data'
-    compileSdk {
-        version = release(36) {
-            minorApiLevel = 1
-        }
-    }
+    compileSdk 36
 
     defaultConfig {
         applicationId "androidtown.org.a119_big_data"
-        minSdk 36
-        targetSdk 36
+        minSdk 34
+        targetSdk 34
         versionCode 1
         versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        ndk {
+            abiFilters 'armeabi-v7a', 'arm64-v8a'
+        }
     }
 
     buildTypes {
@@ -40,4 +40,5 @@ dependencies {
     testImplementation libs.junit
     androidTestImplementation libs.ext.junit
     androidTestImplementation libs.espresso.core
+    implementation "com.kakao.maps.open:android:2.9.5"
 }
