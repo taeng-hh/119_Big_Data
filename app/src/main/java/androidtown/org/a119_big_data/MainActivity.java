@@ -18,6 +18,17 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        try {
+            android.content.pm.PackageInfo info = getPackageManager().getPackageInfo(getPackageName(), android.content.pm.PackageManager.GET_SIGNATURES);
+            for (android.content.pm.Signature signature : info.signatures) {
+                java.security.MessageDigest md = java.security.MessageDigest.getInstance("SHA");
+                md.update(signature.toByteArray());
+                android.util.Log.d("🚨진짜키해시🚨", android.util.Base64.encodeToString(md.digest(), android.util.Base64.DEFAULT).trim());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         mapView = findViewById(R.id.map_view);
 
         // 두 개의 콜백(라이프사이클, 준비완료)을 쉼표(,)로 연결하여 지도 시작

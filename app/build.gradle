@@ -8,7 +8,7 @@ android {
 
     defaultConfig {
         applicationId "androidtown.org.a119_big_data"
-        minSdk 34
+        minSdk 26
         targetSdk 34
         versionCode 1
         versionName "1.0"
@@ -40,5 +40,5 @@ dependencies {
     testImplementation libs.junit
     androidTestImplementation libs.ext.junit
     androidTestImplementation libs.espresso.core
-    implementation "com.kakao.maps.open:android:2.9.5"
+    implementation "com.kakao.maps.open:android:2.13.5"
 }

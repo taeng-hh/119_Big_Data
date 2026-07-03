@@ -19,9 +19,7 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
-        maven {
-            url 'https://devrepo.kakao.com/nexus/content/groups/public/'
-        }
+        maven { url = uri("https://devrepo.kakao.com/nexus/repository/kakaomap-releases/") }
     }
 
     rootProject.name = "119_Big_Data"

@@ -5,6 +5,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
+        android:name=".MyApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -14,7 +15,7 @@
         tools:targetApi="34">
         <meta-data
             android:name="com.kakao.sdk.AppKey"
-            android:value="발급받은_네이티브_앱_키를_여기에_넣으세요" />
+            android:value="5d3f0a47bed40fc0f67ef9c052865514" />
 
         <activity
             android:name=".MainActivity"
