@@ -15,5 +15,127 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+    
+    <LinearLayout
+        android:id="@+id/layout_search_bar"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:background="@drawable/bg_search_bar"
+        android:elevation="4dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingStart="12dp"
+        android:paddingEnd="12dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <EditText
+            android:id="@+id/et_search"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@android:color/transparent"
+            android:hint="장소, 주소 검색"
+            android:importantForAutofill="no"
+            android:inputType="text"
+            android:textSize="15sp"/>
+
+        <ImageView
+            android:id="@+id/iv_search_icon"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:contentDescription="검색 버튼"
+            android:src = "@android:drawable/ic_menu_search"/>
+    </LinearLayout>
+
+    <HorizontalScrollView
+        android:id="@+id/scroll_categories"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:clipToPadding="false"
+        android:elevation="4dp"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:scrollbars="none"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/layout_search_bar">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/btn_category1"
+                android:layout_width="wrap_content"
+                android:layout_height="36dp"
+                android:layout_marginEnd="8dp"
+                android:background="@drawable/bg_category_button"
+                android:text="위험요소"
+                android:textColor="#333333"
+                android:textSize="13sp"
+                app:backgroundTint="@null"/>
+            <Button
+                android:id="@+id/btn_category2"
+                android:layout_width="wrap_content"
+                android:layout_height="36dp"
+                android:layout_marginEnd="8dp"
+                android:background="@drawable/bg_category_button"
+                android:text="위험등급"
+                android:textColor="#333333"
+                android:textSize="13sp"
+                app:backgroundTint="@null"/>
+
+            <Button
+                android:id="@+id/btn_category3"
+                android:layout_width="wrap_content"
+                android:layout_height="36dp"
+                android:layout_marginEnd="8dp"
+                android:background="@drawable/bg_category_button"
+                android:text="근처 소방서"
+                android:textColor="#333333"
+                android:textSize="13sp"
+                app:backgroundTint="@null"/>
+
+            <Button
+                android:id="@+id/btn_category4"
+                android:layout_width="wrap_content"
+                android:layout_height="36dp"
+                android:layout_marginEnd="8dp"
+                android:background="@drawable/bg_category_button"
+                android:text="근처 경찰서"
+                android:textColor="#333333"
+                android:textSize="13sp"
+                app:backgroundTint="@null"/>
+
+            <Button
+                android:id="@+id/btn_category5"
+                android:layout_width="wrap_content"
+                android:layout_height="36dp"
+                android:layout_marginEnd="8dp"
+                android:background="@drawable/bg_category_button"
+                android:text="근처 병원"
+                android:textColor="#333333"
+                android:textSize="13sp"
+                app:backgroundTint="@null"/>
+        </LinearLayout>
+    </HorizontalScrollView>
+
+    <ImageButton
+        android:id="@+id/btn_my_location"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        android:background="@android:drawable/btn_default"
+        android:src="@android:drawable/ic_menu_mylocation"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
