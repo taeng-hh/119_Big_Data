@@ -1,11 +1,11 @@
 plugins {
     alias(libs.plugins.android.application)
+    id 'com.google.gms.google-services'
 }
 
 android {
     namespace 'androidtown.org.a119_big_data'
     compileSdk 36
-
     defaultConfig {
         applicationId "androidtown.org.a119_big_data"
         minSdk 26
@@ -42,4 +42,6 @@ dependencies {
     androidTestImplementation libs.espresso.core
     implementation "com.kakao.maps.open:android:2.13.5"
     implementation 'com.google.android.gms:play-services-location:21.0.1'
+    implementation platform('com.google.firebase:firebase-bom:33.1.2')
+    implementation 'com.google.firebase:firebase-database'
 }

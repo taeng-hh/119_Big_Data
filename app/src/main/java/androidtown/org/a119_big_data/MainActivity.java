@@ -5,6 +5,11 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Looper;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -36,35 +41,109 @@ public class MainActivity extends AppCompatActivity {
 
     private FusedLocationProviderClient fusedLocationClient;
     private LocationCallback locationCallback;
-
     private Label currentLocationLabel;
+
+    // UI 변수들
+    private Button btnFireStation;
+    private Button btnSafetyCenter;
+    private ImageButton btnMyLocation;
+    private EditText etSearch;
+    private ImageView ivSearchIcon;
+
+    // 지도 및 파이어베이스 데이터 처리를 전담할 새 매니저 객체 선언
+    private SafetyMapManager mapManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // UI 컴포넌트 연결
         mapView = findViewById(R.id.map_view);
+        btnFireStation = findViewById(R.id.btn_category1);
+        btnSafetyCenter = findViewById(R.id.btn_category2);
+        btnMyLocation = findViewById(R.id.btn_my_location);
+        etSearch = findViewById(R.id.et_search);
+        ivSearchIcon = findViewById(R.id.iv_search_icon);
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
+        // 카카오맵 라이프사이클 및 준비 콜백 설정
         mapView.start(new MapLifeCycleCallback() {
             @Override
-            public void onMapDestroy() {
-            }
-
+            public void onMapDestroy() {}
             @Override
-            public void onMapError(Exception e) {
-                e.printStackTrace();
-            }
+            public void onMapError(Exception e) { e.printStackTrace(); }
         }, new KakaoMapReadyCallback() {
             @Override
             public void onMapReady(@NonNull KakaoMap map) {
                 kakaoMap = map;
-                checkLocationPermission();
+
+                // 지도가 준비되면 매니저 인스턴스를 생성하고 초기화해!
+                mapManager = new SafetyMapManager(MainActivity.this, kakaoMap);
+
+                // 매니저가 맵의 모든 마커를 지울 때, 메인 액티비티의 내 위치 라벨 참조도 함께 비워주도록 설계
+                mapManager.setOnMapClearedListener(new SafetyMapManager.OnMapClearedListener() {
+                    @Override
+                    public void onMapCleared() {
+                        currentLocationLabel = null;
+                    }
+                });
+            }
+        });
+
+        // 내 위치 보기 버튼 클릭
+        btnMyLocation.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (currentLocationLabel != null && kakaoMap != null) {
+                    kakaoMap.getTrackingManager().startTracking(currentLocationLabel);
+                } else {
+                    checkLocationPermission();
+                }
+            }
+        });
+
+        // 소방서 카테고리 선택 -> 매니저에게 요청 전달
+        btnFireStation.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mapManager != null) {
+                    mapManager.setCategory("fire_station");
+                }
+            }
+        });
+
+        // 안전센터 카테고리 선택 -> 매니저에게 요청 전달
+        btnSafetyCenter.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mapManager != null) {
+                    mapManager.setCategory("safety_center");
+                }
+            }
+        });
+
+        // 돋보기 검색 버튼 클릭 이벤트 -> 매니저에게 요청 전달
+        ivSearchIcon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String keyword = etSearch.getText().toString().trim();
+                if (mapManager == null) return;
+
+                if (!keyword.isEmpty()) {
+                    mapManager.searchAndMoveToGu(keyword);
+                } else {
+                    mapManager.clearGuFilter();
+                    Toast.makeText(MainActivity.this, "전체 지역을 표시합니다.", Toast.LENGTH_SHORT).show();
+                }
             }
         });
     }
+
+    /* ========================================================================= */
+    /* 아래 위치 권한 및 실시간 GPS 수신 기능(UI 화면 관리 영역)은 기존 코드 그대로 유지 */
+    /* ========================================================================= */
 
     private void checkLocationPermission(){
         if(ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)

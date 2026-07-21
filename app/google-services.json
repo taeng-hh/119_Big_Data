@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "737600625388",
+    "project_id": "bigdata119-719b2",
+    "storage_bucket": "bigdata119-719b2.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:737600625388:android:0091b78f09a8d0e430e3c9",
+        "android_client_info": {
+          "package_name": "androidtown.org.a119_big_data"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA-MhneGeAb4f-XPgsun8Kgh_qIS-rLVPE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
