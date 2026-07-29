@@ -5,25 +5,26 @@ import com.google.firebase.database.PropertyName;
 public class SafetyPlace {
     public long id;
     public String name;
-    public String type; // "fire_station" 또는 "safety_center"
+    public String type;
+
+    @PropertyName("type_category")
+    public String typeCategory;
+
     public String address;
     public String gu;
+
+    @PropertyName("Phone") // 파이어베이스의 대문자 "Phone" 매핑
     public String phone;
+
     public double latitude;
+    public double longitude;
 
-    // JSON의 "longitude" 키값을 자바의 longtitude 변수에 매핑
-    @PropertyName("longitude")
-    public double longtitude;
-
-    // JSON의 "safety_index" 키값 매핑
     @PropertyName("safety_index")
-    public int safetyIndex;
+    public Integer safetyIndex; // 값이 없는 항목을 위해 Integer(null 허용)로 설정
 
-    // JSON의 "safety_score" 키값 매핑
     @PropertyName("safety_score")
-    public int safetyScore;
+    public Integer safetyScore; // 값이 없는 항목을 위해 Integer(null 허용)로 설정
 
     // 파이어베이스용 필수 빈 생성자
-    public SafetyPlace() {
-    }
+    public SafetyPlace() {}
 }

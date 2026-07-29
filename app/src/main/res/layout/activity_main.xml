@@ -7,6 +7,17 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
+    <Button
+        android:id="@+id/btn_open_menu"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="메뉴 열기"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="30dp"
+        android:layout_weight = "10"/>
+
+
     <com.kakao.vectormap.MapView
         android:id="@+id/map_view"
         android:layout_width="match_parent"
@@ -109,7 +120,7 @@
                 android:layout_height="36dp"
                 android:layout_marginEnd="8dp"
                 android:background="@drawable/bg_category_button"
-                android:text="근처 경찰서"
+                android:text="근처 안전센터"
                 android:textColor="#333333"
                 android:textSize="13sp"
                 app:backgroundTint="@null"/>

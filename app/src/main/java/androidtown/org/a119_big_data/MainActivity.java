@@ -5,7 +5,6 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Looper;
-import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -28,10 +27,7 @@ import com.kakao.vectormap.KakaoMapReadyCallback;
 import com.kakao.vectormap.MapLifeCycleCallback;
 import com.kakao.vectormap.MapView;
 import com.kakao.vectormap.LatLng;
-import com.kakao.vectormap.label.Label;
-import com.kakao.vectormap.label.LabelOptions;
-import com.kakao.vectormap.label.LabelStyle;
-import com.kakao.vectormap.label.LabelStyles;
+import com.kakao.vectormap.KakaoMapSdk;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -41,34 +37,53 @@ public class MainActivity extends AppCompatActivity {
 
     private FusedLocationProviderClient fusedLocationClient;
     private LocationCallback locationCallback;
-    private Label currentLocationLabel;
+    private LatLng currentLatLng; // 내 현재 위치 저장용 변수
 
     // UI 변수들
-    private Button btnFireStation;
-    private Button btnSafetyCenter;
+    private Button btnCategory1;         // 위험요소 (또는 기존 카테고리 1)
+    private Button btnCategory2;         // 위험등급 (또는 기존 카테고리 2)
+    private Button btnNearbyFireStation;  // 근처 소방서 (btn_category3)
+    private Button btnNearbySafetyCenter; // 근처 안전센터 (btn_category4)
+    private Button btnNearbyHospital;     // 근처 병원 (btn_category5)
+
+    // ★ 추가된 메뉴 열기 버튼
+    private Button btnOpenMenu;
+
     private ImageButton btnMyLocation;
     private EditText etSearch;
     private ImageView ivSearchIcon;
 
-    // 지도 및 파이어베이스 데이터 처리를 전담할 새 매니저 객체 선언
+    // 매니저 객체들
     private SafetyMapManager mapManager;
+    private myLocationMarkerManager locationMarkerManager;
+    private NearbySearchManager nearbySearchManager; // 근처 시설 검색 매니저
+    private boolean isMyLocationVisible = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        KakaoMapSdk.init(this, "5d3f0a47bed40fc0f67ef9c052865514");
         setContentView(R.layout.activity_main);
 
         // UI 컴포넌트 연결
         mapView = findViewById(R.id.map_view);
-        btnFireStation = findViewById(R.id.btn_category1);
-        btnSafetyCenter = findViewById(R.id.btn_category2);
+        btnCategory1 = findViewById(R.id.btn_category1);
+        btnCategory2 = findViewById(R.id.btn_category2);
+        btnNearbyFireStation = findViewById(R.id.btn_category3);
+        btnNearbySafetyCenter = findViewById(R.id.btn_category4);
+        btnNearbyHospital = findViewById(R.id.btn_category5);
+
+        // ★ 새로 추가할 메뉴 열기 버튼 연결 (activity_main.xml에 이 id의 버튼이 있어야 합니다)
+        btnOpenMenu = findViewById(R.id.btn_open_menu);
+
         btnMyLocation = findViewById(R.id.btn_my_location);
         etSearch = findViewById(R.id.et_search);
         ivSearchIcon = findViewById(R.id.iv_search_icon);
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
-        // 카카오맵 라이프사이클 및 준비 콜백 설정
+        // 카카오맵 라이프사이클 및 준비 콜백
         mapView.start(new MapLifeCycleCallback() {
             @Override
             public void onMapDestroy() {}
@@ -79,72 +94,156 @@ public class MainActivity extends AppCompatActivity {
             public void onMapReady(@NonNull KakaoMap map) {
                 kakaoMap = map;
 
-                // 지도가 준비되면 매니저 인스턴스를 생성하고 초기화해!
+                // 매니저 인스턴스 초기화
                 mapManager = new SafetyMapManager(MainActivity.this, kakaoMap);
+                locationMarkerManager = new myLocationMarkerManager(MainActivity.this, kakaoMap);
+                nearbySearchManager = new NearbySearchManager(MainActivity.this, kakaoMap);
 
-                // 매니저가 맵의 모든 마커를 지울 때, 메인 액티비티의 내 위치 라벨 참조도 함께 비워주도록 설계
-                mapManager.setOnMapClearedListener(new SafetyMapManager.OnMapClearedListener() {
+                checkLocationPermission();
+            }
+        });
+
+        // 1. 내 위치 버튼
+        btnMyLocation.setOnClickListener(v -> {
+
+            isMyLocationVisible = true;
+
+            if (locationMarkerManager != null) {
+                locationMarkerManager.moveToCurrentLocation();
+            } else {
+                checkLocationPermission();
+            }
+        });
+
+        // ==========================================
+        // ★ 추가된 기능: 통합 메뉴 (바텀 시트) 띄우기
+        // ==========================================
+        if (btnOpenMenu != null) {
+            btnOpenMenu.setOnClickListener(v -> {
+                CategoryMenuDialog menuDialog = new CategoryMenuDialog();
+
+                menuDialog.setOnCategorySelectedListener(new CategoryMenuDialog.OnCategorySelectedListener() {
                     @Override
-                    public void onMapCleared() {
-                        currentLocationLabel = null;
+                    public void onCategorySelected(String mainCategory, String subCategory) {
+
+                        // 기존 마커를 지우는 로직이 필요하다면 mapManager를 통해 초기화
+                        // if (mapManager != null) { mapManager.clearMarkers(); }
+
+                        if (mainCategory.equals("소방서")) {
+                            if (mapManager != null) {
+                                mapManager.setCategory("fire_station");
+                                Toast.makeText(MainActivity.this, "소방서를 표시합니다.", Toast.LENGTH_SHORT).show();
+                            }
+                        } else if (mainCategory.equals("안전센터")) {
+                            if (mapManager != null) {
+                                mapManager.setCategory("safety_center");
+                                Toast.makeText(MainActivity.this, "안전센터/구조대를 표시합니다.", Toast.LENGTH_SHORT).show();
+                            }
+                        } else if (mainCategory.equals("병원")) {
+                            // subCategory(일반의원, 안과 등)를 받아서 처리하는 전용 메서드 호출
+                            loadHospitalData(subCategory);
+                        }
                     }
                 });
+
+                menuDialog.show(getSupportFragmentManager(), "CategoryMenu");
+            });
+        }
+        // ==========================================
+
+        // 기존 2. 카테고리 1 (소방서 목록)
+        btnCategory1.setOnClickListener(v -> {
+            if (mapManager != null) {
+                mapManager.setCategory("fire_station");
             }
         });
 
-        // 내 위치 보기 버튼 클릭
-        btnMyLocation.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (currentLocationLabel != null && kakaoMap != null) {
-                    kakaoMap.getTrackingManager().startTracking(currentLocationLabel);
+        // 기존 3. 카테고리 2 (안전센터 목록)
+        btnCategory2.setOnClickListener(v -> {
+            if (mapManager != null) {
+                mapManager.setCategory("safety_center");
+            }
+        });
+
+        // 4. [근처 소방서] 버튼 클릭
+        btnNearbyFireStation.setOnClickListener(v -> {
+            if (nearbySearchManager != null && mapManager != null) {
+                if (currentLatLng != null) {
+                    nearbySearchManager.showNearbyPlaces(
+                            mapManager.getSafetyList(),
+                            currentLatLng,
+                            NearbySearchManager.TYPE_FIRE_STATION,
+                            3000 // 100km (테스트 후 3000m로 변경 가능)
+                    );
                 } else {
-                    checkLocationPermission();
+                    Toast.makeText(MainActivity.this, "현재 위치 정보를 가져오는 중입니다.", Toast.LENGTH_SHORT).show();
                 }
             }
         });
 
-        // 소방서 카테고리 선택 -> 매니저에게 요청 전달
-        btnFireStation.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (mapManager != null) {
-                    mapManager.setCategory("fire_station");
-                }
-            }
-        });
-
-        // 안전센터 카테고리 선택 -> 매니저에게 요청 전달
-        btnSafetyCenter.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (mapManager != null) {
-                    mapManager.setCategory("safety_center");
-                }
-            }
-        });
-
-        // 돋보기 검색 버튼 클릭 이벤트 -> 매니저에게 요청 전달
-        ivSearchIcon.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String keyword = etSearch.getText().toString().trim();
-                if (mapManager == null) return;
-
-                if (!keyword.isEmpty()) {
-                    mapManager.searchAndMoveToGu(keyword);
+        // 5. [근처 안전센터] 버튼 클릭
+        btnNearbySafetyCenter.setOnClickListener(v -> {
+            if (nearbySearchManager != null && mapManager != null) {
+                if (currentLatLng != null) {
+                    nearbySearchManager.showNearbyPlaces(
+                            mapManager.getSafetyList(),
+                            currentLatLng,
+                            NearbySearchManager.TYPE_SAFETY_CENTER,
+                            3000 // 100km
+                    );
                 } else {
-                    mapManager.clearGuFilter();
-                    Toast.makeText(MainActivity.this, "전체 지역을 표시합니다.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this, "현재 위치 정보를 가져오는 중입니다.", Toast.LENGTH_SHORT).show();
                 }
+            }
+        });
+
+        // 6. [근처 병원] 버튼 클릭
+        btnNearbyHospital.setOnClickListener(v -> {
+            if (nearbySearchManager != null && mapManager != null) {
+                if (currentLatLng != null) {
+                    nearbySearchManager.showNearbyPlaces(
+                            mapManager.getSafetyList(),
+                            currentLatLng,
+                            NearbySearchManager.TYPE_HOSPITAL,
+                            3000 // 100km
+                    );
+                } else {
+                    Toast.makeText(MainActivity.this, "현재 위치 정보를 가져오는 중입니다.", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+        // 7. 돋보기 검색 버튼
+        ivSearchIcon.setOnClickListener(v -> {
+            String keyword = etSearch.getText().toString().trim();
+            if (mapManager == null) return;
+
+            if (nearbySearchManager != null) {
+                nearbySearchManager.clearNearbyMarkers();
+            }
+
+            if (!keyword.isEmpty()) {
+                mapManager.searchAndMoveToGu(keyword);
+            } else {
+                mapManager.clearGuFilter();
+                Toast.makeText(MainActivity.this, "전체 지역을 표시합니다.", Toast.LENGTH_SHORT).show();
             }
         });
     }
 
-    /* ========================================================================= */
-    /* 아래 위치 권한 및 실시간 GPS 수신 기능(UI 화면 관리 영역)은 기존 코드 그대로 유지 */
-    /* ========================================================================= */
+    // ★ 병원 세부 카테고리를 처리하는 메서드 추가
+    private void loadHospitalData(String subCategory) {
+        Toast.makeText(MainActivity.this, subCategory + " 데이터를 불러옵니다.", Toast.LENGTH_SHORT).show();
 
+        if (mapManager != null) {
+            // mapManager 내부에 파이어베이스 또는 JSON에서 진료과에 맞게
+            // 데이터를 불러오는 로직(예: mapManager.setCategory("hospital_" + subCategory))을
+            // 구현해주시면 됩니다.
+            // mapManager.setCategory("hospital_" + subCategory);
+        }
+    }
+
+    /* 위치 권한 및 GPS 제어 로직 */
     private void checkLocationPermission(){
         if(ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED){
@@ -193,16 +292,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void updateCurrentLocation(double lat, double lng){
-        LatLng currentLatLng = LatLng.from(lat, lng);
+        currentLatLng = LatLng.from(lat, lng);
 
-        if(currentLocationLabel == null){
-            LabelStyles styles = kakaoMap.getLabelManager()
-                    .addLabelStyles(LabelStyles.from(LabelStyle.from(android.R.drawable.ic_menu_mylocation)));
-            LabelOptions options = LabelOptions.from(currentLatLng).setStyles(styles);
-            currentLocationLabel = kakaoMap.getLabelManager().getLayer().addLabel(options);
-            kakaoMap.getTrackingManager().startTracking(currentLocationLabel);
-        } else {
-            currentLocationLabel.moveTo(currentLatLng);
+        if(locationMarkerManager != null && isMyLocationVisible){
+            locationMarkerManager.updateLocation(lat, lng, false);
         }
     }
 
