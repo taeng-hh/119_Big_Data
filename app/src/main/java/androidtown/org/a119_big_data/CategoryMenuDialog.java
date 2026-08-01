@@ -56,7 +56,7 @@ public class CategoryMenuDialog extends BottomSheetDialogFragment {
         btnHospitalMain.setOnClickListener(v -> {
             isHopitalExpanded = !isHopitalExpanded;
             layoutHospitalSub.setVisibility(isHopitalExpanded ? View.VISIBLE : View.GONE);
-            btnHospitalMain.setText(isHopitalExpanded ? "병원 (접기 ▲)" : "병원 (진료과 선택 ▼)");
+            btnHospitalMain.setText(isHopitalExpanded ? "병원 (접기 ▲)" : "병원 (진료과 선택)");
         });
 
         btnSubGeneral.setOnClickListener(v -> sendSelection("병원", "일반의원"));

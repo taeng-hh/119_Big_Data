@@ -78,7 +78,7 @@ public class MainActivity extends AppCompatActivity {
         btnNearbyFireStation = findViewById(R.id.btn_category3);
         btnNearbySafetyCenter = findViewById(R.id.btn_category4);
         btnNearbyHospital = findViewById(R.id.btn_category5);
-        btnOpenMenu = findViewById(R.id.btn_open_menu);
+        View btnOpenMenu = findViewById(R.id.btn_open_menu);
 
         btnMyLocation = findViewById(R.id.btn_my_location);
         etSearch = findViewById(R.id.et_search);

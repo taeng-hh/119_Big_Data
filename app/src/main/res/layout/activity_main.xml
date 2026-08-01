@@ -21,9 +21,10 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
+        <!-- 검색창 영역 -->
         <LinearLayout
             android:id="@+id/layout_search_bar"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="50dp"
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
@@ -32,12 +33,24 @@
             android:elevation="4dp"
             android:gravity="center_vertical"
             android:orientation="horizontal"
-            android:paddingStart="12dp"
+            android:paddingStart="4dp"
             android:paddingEnd="12dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
+            <!-- 햄버거 메뉴 버튼 -->
+            <ImageButton
+                android:id="@+id/btn_open_menu"
+                android:layout_width="44dp"
+                android:layout_height="match_parent"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="메뉴 열기"
+                android:padding="11dp"
+                android:src="@drawable/ic_menu"
+                app:tint="#6B3532" />
+
+            <!-- 검색 입력창: 남은 공간 전체 사용 -->
             <EditText
                 android:id="@+id/et_search"
                 android:layout_width="0dp"
@@ -47,19 +60,28 @@
                 android:hint="장소, 주소 검색"
                 android:importantForAutofill="no"
                 android:inputType="text"
+                android:paddingStart="6dp"
+                android:paddingEnd="8dp"
+                android:singleLine="true"
+                android:textColor="#333333"
+                android:textColorHint="#999999"
                 android:textSize="15sp" />
 
+            <!-- 검색 아이콘 -->
             <ImageView
                 android:id="@+id/iv_search_icon"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
+                android:layout_width="36dp"
+                android:layout_height="match_parent"
                 android:contentDescription="검색 버튼"
-                android:src="@android:drawable/ic_menu_search" />
+                android:padding="6dp"
+                android:src="@android:drawable/ic_menu_search"
+                app:tint="#6B3532" />
+
         </LinearLayout>
 
         <HorizontalScrollView
             android:id="@+id/scroll_categories"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
             android:clipToPadding="false"
@@ -130,19 +152,9 @@
                     android:textColor="#333333"
                     android:textSize="13sp"
                     app:backgroundTint="@null" />
+
             </LinearLayout>
         </HorizontalScrollView>
-
-        <!-- 복원된 메뉴 열기 버튼 -->
-        <Button
-            android:id="@+id/btn_open_menu"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="30dp"
-            android:text="메뉴 열기"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
 
         <ImageButton
             android:id="@+id/btn_my_location"
@@ -151,6 +163,7 @@
             android:layout_marginEnd="16dp"
             android:layout_marginBottom="16dp"
             android:background="@android:drawable/btn_default"
+            android:contentDescription="현재 위치"
             android:src="@android:drawable/ic_menu_mylocation"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
