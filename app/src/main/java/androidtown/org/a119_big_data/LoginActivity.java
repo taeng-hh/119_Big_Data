@@ -124,9 +124,16 @@ public class LoginActivity extends AppCompatActivity {
         try {
             GoogleSignInAccount account = completedTask.getResult(ApiException.class);
             if (account != null) {
+                String userId = account.getId(); // 구글 고유 ID를 가져오는 변수 선언 추가
                 String email = account.getEmail();
+
                 Toast.makeText(this, "구글 로그인 성공 (" + email + ")", Toast.LENGTH_SHORT).show();
+
                 navigateToMain();
+
+                // 데이터베이스 저장 메서드 호출
+                saveUserToFirestore(userId, email, "Google");
+
             }
         } catch (ApiException e) {
             Toast.makeText(this, "구글 로그인 실패: " + e.getStatusCode(), Toast.LENGTH_SHORT).show();
