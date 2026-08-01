@@ -13,7 +13,16 @@
           "package_name": "androidtown.org.a119_big_data"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "737600625388-7obkpto7sfos8c5io4gfioooprotbmmk.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "androidtown.org.a119_big_data",
+            "certificate_hash": "4f4379ab583a4b8ad8117729eb8f84dc804c1778"
+          }
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyA-MhneGeAb4f-XPgsun8Kgh_qIS-rLVPE"
