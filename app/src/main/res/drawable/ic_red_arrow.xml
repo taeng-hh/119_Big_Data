@@ -1,11 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:width = "32dp"
-    android:height = "32dp"
-    android:viewportHeight="24"
-    android:viewportWidth="24">
+    android:width="32dp"
+    android:height="32dp"
+    android:viewportWidth="512"
+    android:viewportHeight="512">
+
+    <!-- 위치 핀 본체 -->
     <path
-        android:fillColor="#FE0000"
-        android:pathData="M12,2L4.5,20.29l0.71,0.71L12,18l6.79,3,0.71,-0.71z"/>
+        android:fillColor="#E5393D"
+        android:fillType="evenOdd"
+        android:pathData="
+            M256,75
+            C184,75 126,132 126,204
+            C126,306 197,393 256,438
+            C315,393 386,306 386,204
+            C386,132 328,75 256,75
+            Z
+
+            M256,151
+            C286,151 309,175 309,204
+            C309,234 286,258 256,258
+            C226,258 203,234 203,204
+            C203,175 226,151 256,151
+            Z" />
+
+    <!-- 중앙 구멍 아래쪽 그림자 -->
+    <path
+        android:fillColor="#22000000"
+        android:pathData="
+            M203,204
+            C203,234 226,258 256,258
+            C286,258 309,234 309,204
+            C319,220 325,235 325,249
+            C325,286 294,314 256,314
+            C218,314 187,286 187,249
+            C187,235 193,220 203,204
+            Z" />
 
 </vector>
