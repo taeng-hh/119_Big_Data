@@ -168,6 +168,64 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 
+        <androidx.cardview.widget.CardView
+            android:id="@+id/card_safety_info"
+            android:layout_width="220dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:layout_marginTop="80dp"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="8dp"
+            app:cardBackgroundColor="#F8FAFC"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+            
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+                
+                <TextView
+                    android:id="@+id/tv_region_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="지역명"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:textColor="#1E293B"/>
+                
+                <TextView
+                    android:id="@+id/tv_safety_score"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:text="안전점수 : 00.0점"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:textColor="#D32F2F"/>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="[평가 및 산출 이유]"
+                    android:textSize="13sp"
+                    android:textStyle="bold"
+                    android:textColor="#475569" />
+                
+                <TextView
+                    android:id="@+id/tv_safety_reasons"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="세부 요인 분석 중 .. "
+                    android:textSize="12sp"
+                    android:textColor="#64748B"
+                    android:lineSpacingExtra="3dp"/>
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <include

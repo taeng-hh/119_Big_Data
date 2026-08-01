@@ -2,6 +2,7 @@ package androidtown.org.a119_big_data;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.widget.Button;
 import android.widget.Toast;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -13,17 +14,25 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.Task;
-import com.google.android.material.button.MaterialButton;
+
+import com.google.firebase.firestore.FieldValue;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.SetOptions;
 
 import com.kakao.sdk.user.UserApiClient;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class LoginActivity extends AppCompatActivity {
 
-    private MaterialButton btnKakaoLogin, btnGoogleLogin;
+    private Button btnKakaoLogin, btnGoogleLogin;
 
     // 구글 로그인을 위한 변수들
     private GoogleSignInClient googleSignInClient;
     private ActivityResultLauncher<Intent> googleSignInLauncher;
+
+    private FirebaseFirestore db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,6 +41,8 @@ public class LoginActivity extends AppCompatActivity {
 
         btnKakaoLogin = findViewById(R.id.btn_kakao_login);
         btnGoogleLogin = findViewById(R.id.btn_google_login);
+
+        db = FirebaseFirestore.getInstance();
 
         // 1. 카카오 로그인 로직 구현
         btnKakaoLogin.setOnClickListener(v -> {
@@ -83,10 +94,24 @@ public class LoginActivity extends AppCompatActivity {
             if (error != null) {
                 Toast.makeText(this, "카카오 로그인 실패: " + error.getMessage(), Toast.LENGTH_SHORT).show();
             } else if (token != null) {
-                Toast.makeText(this, "카카오 계정 로그인 성공!", Toast.LENGTH_SHORT).show();
-                navigateToMain();
+                fetchKakaoUserInfo();
             }
             return null;
+        });
+    }
+
+    private void fetchKakaoUserInfo() {
+        UserApiClient.getInstance().me((user, error) -> {
+            if(error != null) {
+                Toast.makeText(this, "사용자 정보 요청 실패 : " + error.getMessage(), Toast.LENGTH_SHORT).show();
+            } else if (user != null) {
+                String userId = String.valueOf(user.getId());
+                String email = (user.getKakaoAccount() != null && user.getKakaoAccount().getEmail() != null)
+                        ? user.getKakaoAccount().getEmail()
+                        : "Kakao_" + userId + "@social.com";
+                saveUserToFirestore(userId, email, "Kakao");
+            }
+            return null ;
         });
     }
 
@@ -104,6 +129,23 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
+    private void saveUserToFirestore(String userId, String email, String provider) {
+        Map<String, Object> userData = new HashMap<>();
+        userData.put("userId", userId);
+        userData.put("email", email);
+        userData.put("provider", provider);
+        userData.put("lastLogin", FieldValue.serverTimestamp());
+
+        db.collection("Users").document(email)
+                .set(userData, SetOptions.merge())
+                .addOnSuccessListener(aVoid -> {
+                    Toast.makeText(this, provider + "로그인 및 회원가입 완료", Toast.LENGTH_SHORT).show();
+                    navigateToMain();
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(this, "데이터베이스 저장 실패: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                });
+    }
     // 메인 화면으로 이동하는 공통 메서드
     private void navigateToMain() {
         Intent intent = new Intent(LoginActivity.this, MainActivity.class);
