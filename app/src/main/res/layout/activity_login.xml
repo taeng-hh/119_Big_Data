@@ -27,7 +27,7 @@
         android:textSize="14sp"/>
 
     <!-- 카카오 계정 로그인 버튼 -->
-    <com.google.android.material.button.MaterialButton
+    <Button
         android:id="@+id/btn_kakao_login"
         android:layout_width="match_parent"
         android:layout_height="54dp"
@@ -42,7 +42,7 @@
         app:iconTint="#191919"/>
 
     <!-- 구글 계정 로그인 버튼 -->
-    <com.google.android.material.button.MaterialButton
+    <Button
         android:id="@+id/btn_google_login"
         android:layout_width="match_parent"
         android:layout_height="54dp"

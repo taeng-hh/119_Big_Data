@@ -189,12 +189,42 @@ public class MainActivity extends AppCompatActivity {
                 nearbySearchManager.clearNearbyMarkers();
             }
 
+            androidx.cardview.widget.CardView cardSafetyInfo = findViewById(R.id.card_safety_info);
+
             if (!keyword.isEmpty()) {
-                mapManager.clearMarkers();
-                mapManager.searchAndMoveToGu(keyword);
-            } else {
-                mapManager.clearGuFilter();
-                mapManager.clearMarkers();
+                if (mapManager != null) {
+                    mapManager.clearMarkers();
+                    mapManager.searchAndMoveToGu(keyword);
+                }
+                MapDrawHelper.moveToRegion(kakaoMap, MainActivity.this, keyword);
+
+                SafetyScoreHelper.SafetyResult result = SafetyScoreHelper.getScoreData(MainActivity.this, keyword);
+
+                if(result != null){
+                    android.widget.TextView tvRegionName = findViewById(R.id.tv_region_name);
+                    android.widget.TextView tvSafetyScore = findViewById(R.id.tv_safety_score);
+                    android.widget.TextView tvSafetyReasons = findViewById(R.id.tv_safety_reasons);
+
+                    tvRegionName.setText("[" + result.type + "] " + result.name);
+                    tvSafetyScore.setText(String.format("안전 점수: %.2f점", result.score));
+
+                    String reasonText = String.format(
+                            "• 총평: %s\\n• 화재 발생 건수: %d건\\n• 소방용수 인프라: %d개\\n• 승강기/교통사고: %d건\\n",
+                            result.evaluation, result.fireCount, result.waterCount, result.elevatorTrafficCount
+                    );
+                    tvSafetyReasons.setText(reasonText);
+
+                    cardSafetyInfo.setVisibility(View.VISIBLE);
+                }else {
+                    cardSafetyInfo.setVisibility(View.GONE);
+                    Toast.makeText(MainActivity.this, "해당 지역의 분석 결과를 찾을 수 없습니다.", Toast.LENGTH_SHORT).show();
+                }
+            }else {
+                if(mapManager != null) {
+                    mapManager.clearGuFilter();
+                    mapManager.clearMarkers();
+                }
+                cardSafetyInfo.setVisibility(View.GONE);
                 Toast.makeText(MainActivity.this, "전체 지역을 표시합니다.", Toast.LENGTH_SHORT).show();
             }
         });
