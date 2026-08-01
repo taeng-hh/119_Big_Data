@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFF9F5"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:padding="24dp">
+
+    <!-- 상단 타이틀 -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="우리집, 불(火)안해?"
+        android:textColor="#0F172A"
+        android:textSize="26sp"
+        android:textStyle="bold"/>
+    
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="48dp"
+        android:text="간편하게 로그인하고 안전 등급을 확인하세요"
+        android:textColor="#64748B"
+        android:textSize="14sp"/>
+
+    <!-- 카카오 계정 로그인 버튼 -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_kakao_login"
+        android:layout_width="match_parent"
+        android:layout_height="54dp"
+        android:layout_marginBottom="16dp"
+        android:backgroundTint="#FEE500"
+        android:text="카카오로 3초 만에 시작하기"
+        android:textColor="#191919"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        app:cornerRadius="12dp"
+        app:icon="@android:drawable/ic_menu_send"
+        app:iconTint="#191919"/>
+
+    <!-- 구글 계정 로그인 버튼 -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_google_login"
+        android:layout_width="match_parent"
+        android:layout_height="54dp"
+        android:backgroundTint="#FFFFFF"
+        android:text="구글로 시작하기"
+        android:textColor="#1E293B"
+        android:textSize="15sp"
+        app:cornerRadius="12dp"
+        app:strokeColor="#CBD5E1"
+        app:strokeWidth="1dp"/>
+
+
+</LinearLayout>

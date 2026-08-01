@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="280dp"
+    android:layout_height="match_parent"
+    android:background="@android:color/white"
+    android:orientation="vertical"
+    android:padding="20dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop = "24dp"
+        android:layout_marginBottom="20dp"
+        android:text="지도 카테고리 선택"
+        android:textColor="#333333"
+        android:textSize="20sp"
+        android:textStyle="bold"/>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <!-- 소방서 버튼 -->
+            <Button
+                android:id="@+id/btn_fire_station"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:text = "소방서"/>
+
+            <!-- 안전센터/구조대 버튼 -->
+            <Button
+                android:id="@+id/btn_safety_center"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:text = "안전센터 / 구조대" />
+
+            <!-- 병원 메인 버튼 -->
+            <Button
+                android:id="@+id/btn_hospital_main"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="병원 (진료과 선택 ▼)"/>
+
+            <!-- 병원 하위 카테고리 Grid -->
+            <GridLayout
+                android:id="@+id/layout_hospital_sub"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:columnCount="2"
+                android:visibility="gone">
+
+                <Button
+                    android:id="@+id/btn_sub_rehabilitation"
+                    android:layout_width="0dp"
+                    android:layout_margin="4dp"
+                    android:layout_columnWeight="1"
+                    android:text="재활의학과"/>
+
+                <Button
+                    android:id="@+id/btn_sub_family"
+                    android:layout_width="0dp"
+                    android:layout_margin="4dp"
+                    android:layout_columnWeight="1"
+                    android:text="가정의학과"/>
+
+
+                <Button
+                    android:id="@+id/btn_sub_etc"
+                    android:layout_width="0dp"
+                    android:layout_margin="4dp"
+                    android:layout_columnWeight="1"
+                    android:text="기타"/>
+
+                <Button
+                    android:id="@+id/btn_sub_internal"
+                    android:layout_width="0dp"
+                    android:layout_margin="4dp"
+                    android:layout_columnWeight="1"
+                    android:text="내과"/>
+
+                <Button
+                    android:id="@+id/btn_sub_anpa"
+                    android:layout_width="0dp"
+                    android:layout_margin="4dp"
+                    android:layout_columnWeight="1"
+                    android:text="마취통증의학과"/>
+
+                <Button
+                    android:id="@+id/btn_sub_uro"
+                    android:layout_width="0dp"
+                    android:layout_margin="4dp"
+                    android:layout_columnWeight="1"
+                    android:text="비뇨기과"/>
+
+                <Button
+                    android:id="@+id/btn_sub_ps"
+                    android:layout_width="0dp"
+                    android:layout_margin="4dp"
+                    android:layout_columnWeight="1"
+                    android:text="성형외과"/>
+
+                <Button
+                    android:id="@+id/btn_sub_pediatrics"
+                    android:layout_width="0dp"
+                    android:layout_margin="4dp"
+                    android:layout_columnWeight="1"
+                    android:text="소아과"/>
+
+                <Button
+                    android:id="@+id/btn_sub_ns"
+                    android:layout_width="0dp"
+                    android:layout_margin="4dp"
+                    android:layout_columnWeight="1"
+                    android:text="신경외과"/>
+
+                <Button
+                    android:id="@+id/btn_sub_neuron"
+                    android:layout_width="0dp"
+                    android:layout_margin="4dp"
+                    android:layout_columnWeight="1"
+                    android:text="신경과"/>
+
+                <Button
+                    android:id="@+id/btn_sub_ophthal"
+                    android:layout_width="0dp"
+                    android:layout_margin="4dp"
+                    android:layout_columnWeight="1"
+                    android:text="안과"/>
+
+                <Button
+                    android:id="@+id/btn_sub_radio"
+                    android:layout_width="0dp"
+                    android:layout_margin="4dp"
+                    android:layout_columnWeight="1"
+                    android:text="영상의학과"/>
+
+                <Button
+                    android:id="@+id/btn_sub_gs"
+                    android:layout_width="0dp"
+                    android:layout_margin="4dp"
+                    android:layout_columnWeight="1"
+                    android:text="외과"/>
+
+                <Button
+                    android:id="@+id/btn_sub_nursing"
+                    android:layout_width="0dp"
+                    android:layout_margin="4dp"
+                    android:layout_columnWeight="1"
+                    android:text="요양병원"/>
+
+                <Button
+                    android:id="@+id/btn_sub_general"
+                    android:layout_width="0dp"
+                    android:layout_margin="4dp"
+                    android:layout_columnWeight="1"
+                    android:text="일반의원"/>
+
+                <Button
+                    android:id="@+id/btn_sub_mentalClinic"
+                    android:layout_width="0dp"
+                    android:layout_margin="4dp"
+                    android:layout_columnWeight="1"
+                    android:text="정신건강의학과"/>
+
+                <Button
+                    android:id="@+id/btn_sub_ortho"
+                    android:layout_width="0dp"
+                    android:layout_margin="4dp"
+                    android:layout_columnWeight="1"
+                    android:text="정형외과"/>
+
+                <Button
+                    android:id="@+id/btn_sub_dental"
+                    android:layout_width="0dp"
+                    android:layout_margin="4dp"
+                    android:layout_columnWeight="1"
+                    android:text="치과"/>
+
+                <Button
+                    android:id="@+id/btn_sub_derma"
+                    android:layout_width="0dp"
+                    android:layout_margin="4dp"
+                    android:layout_columnWeight="1"
+                    android:text="피부과"/>
+
+            </GridLayout>
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

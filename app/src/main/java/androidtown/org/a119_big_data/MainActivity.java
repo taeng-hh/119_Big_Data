@@ -1,12 +1,15 @@
 package androidtown.org.a119_big_data;
 
+import android.content.Intent;
 import android.Manifest;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Looper;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.GridLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -14,6 +17,8 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
@@ -37,27 +42,27 @@ public class MainActivity extends AppCompatActivity {
 
     private FusedLocationProviderClient fusedLocationClient;
     private LocationCallback locationCallback;
-    private LatLng currentLatLng; // 내 현재 위치 저장용 변수
+    private LatLng currentLatLng;
 
-    // UI 변수들
-    private Button btnCategory1;         // 위험요소 (또는 기존 카테고리 1)
-    private Button btnCategory2;         // 위험등급 (또는 기존 카테고리 2)
-    private Button btnNearbyFireStation;  // 근처 소방서 (btn_category3)
-    private Button btnNearbySafetyCenter; // 근처 안전센터 (btn_category4)
-    private Button btnNearbyHospital;     // 근처 병원 (btn_category5)
-
-    // ★ 추가된 메뉴 열기 버튼
+    private Button btnCategory1;
+    private Button btnCategory2;
+    private Button btnNearbyFireStation;
+    private Button btnNearbySafetyCenter;
+    private Button btnNearbyHospital;
     private Button btnOpenMenu;
 
     private ImageButton btnMyLocation;
     private EditText etSearch;
     private ImageView ivSearchIcon;
 
-    // 매니저 객체들
     private SafetyMapManager mapManager;
     private myLocationMarkerManager locationMarkerManager;
-    private NearbySearchManager nearbySearchManager; // 근처 시설 검색 매니저
+    private NearbySearchManager nearbySearchManager;
     private boolean isMyLocationVisible = false;
+
+    private DrawerLayout drawerLayout;
+    private GridLayout layoutHospitalSub;
+    private boolean isHospitalExpanded = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,15 +71,13 @@ public class MainActivity extends AppCompatActivity {
         KakaoMapSdk.init(this, "5d3f0a47bed40fc0f67ef9c052865514");
         setContentView(R.layout.activity_main);
 
-        // UI 컴포넌트 연결
+        drawerLayout = findViewById(R.id.drawer_layout);
         mapView = findViewById(R.id.map_view);
         btnCategory1 = findViewById(R.id.btn_category1);
         btnCategory2 = findViewById(R.id.btn_category2);
         btnNearbyFireStation = findViewById(R.id.btn_category3);
         btnNearbySafetyCenter = findViewById(R.id.btn_category4);
         btnNearbyHospital = findViewById(R.id.btn_category5);
-
-        // ★ 새로 추가할 메뉴 열기 버튼 연결 (activity_main.xml에 이 id의 버튼이 있어야 합니다)
         btnOpenMenu = findViewById(R.id.btn_open_menu);
 
         btnMyLocation = findViewById(R.id.btn_my_location);
@@ -83,7 +86,8 @@ public class MainActivity extends AppCompatActivity {
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
-        // 카카오맵 라이프사이클 및 준비 콜백
+        setupDrawerMenu();
+
         mapView.start(new MapLifeCycleCallback() {
             @Override
             public void onMapDestroy() {}
@@ -94,7 +98,6 @@ public class MainActivity extends AppCompatActivity {
             public void onMapReady(@NonNull KakaoMap map) {
                 kakaoMap = map;
 
-                // 매니저 인스턴스 초기화
                 mapManager = new SafetyMapManager(MainActivity.this, kakaoMap);
                 locationMarkerManager = new myLocationMarkerManager(MainActivity.this, kakaoMap);
                 nearbySearchManager = new NearbySearchManager(MainActivity.this, kakaoMap);
@@ -103,9 +106,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        // 1. 내 위치 버튼
         btnMyLocation.setOnClickListener(v -> {
-
             isMyLocationVisible = true;
 
             if (locationMarkerManager != null) {
@@ -115,57 +116,26 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        // ==========================================
-        // ★ 추가된 기능: 통합 메뉴 (바텀 시트) 띄우기
-        // ==========================================
         if (btnOpenMenu != null) {
             btnOpenMenu.setOnClickListener(v -> {
-                CategoryMenuDialog menuDialog = new CategoryMenuDialog();
-
-                menuDialog.setOnCategorySelectedListener(new CategoryMenuDialog.OnCategorySelectedListener() {
-                    @Override
-                    public void onCategorySelected(String mainCategory, String subCategory) {
-
-                        // 기존 마커를 지우는 로직이 필요하다면 mapManager를 통해 초기화
-                        // if (mapManager != null) { mapManager.clearMarkers(); }
-
-                        if (mainCategory.equals("소방서")) {
-                            if (mapManager != null) {
-                                mapManager.setCategory("fire_station");
-                                Toast.makeText(MainActivity.this, "소방서를 표시합니다.", Toast.LENGTH_SHORT).show();
-                            }
-                        } else if (mainCategory.equals("안전센터")) {
-                            if (mapManager != null) {
-                                mapManager.setCategory("safety_center");
-                                Toast.makeText(MainActivity.this, "안전센터/구조대를 표시합니다.", Toast.LENGTH_SHORT).show();
-                            }
-                        } else if (mainCategory.equals("병원")) {
-                            // subCategory(일반의원, 안과 등)를 받아서 처리하는 전용 메서드 호출
-                            loadHospitalData(subCategory);
-                        }
-                    }
-                });
-
-                menuDialog.show(getSupportFragmentManager(), "CategoryMenu");
+                if (drawerLayout != null) {
+                    drawerLayout.openDrawer(GravityCompat.START);
+                }
             });
         }
-        // ==========================================
 
-        // 기존 2. 카테고리 1 (소방서 목록)
         btnCategory1.setOnClickListener(v -> {
             if (mapManager != null) {
                 mapManager.setCategory("fire_station");
             }
         });
 
-        // 기존 3. 카테고리 2 (안전센터 목록)
         btnCategory2.setOnClickListener(v -> {
             if (mapManager != null) {
                 mapManager.setCategory("safety_center");
             }
         });
 
-        // 4. [근처 소방서] 버튼 클릭
         btnNearbyFireStation.setOnClickListener(v -> {
             if (nearbySearchManager != null && mapManager != null) {
                 if (currentLatLng != null) {
@@ -173,7 +143,7 @@ public class MainActivity extends AppCompatActivity {
                             mapManager.getSafetyList(),
                             currentLatLng,
                             NearbySearchManager.TYPE_FIRE_STATION,
-                            3000 // 100km (테스트 후 3000m로 변경 가능)
+                            3000
                     );
                 } else {
                     Toast.makeText(MainActivity.this, "현재 위치 정보를 가져오는 중입니다.", Toast.LENGTH_SHORT).show();
@@ -181,7 +151,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        // 5. [근처 안전센터] 버튼 클릭
         btnNearbySafetyCenter.setOnClickListener(v -> {
             if (nearbySearchManager != null && mapManager != null) {
                 if (currentLatLng != null) {
@@ -189,7 +158,7 @@ public class MainActivity extends AppCompatActivity {
                             mapManager.getSafetyList(),
                             currentLatLng,
                             NearbySearchManager.TYPE_SAFETY_CENTER,
-                            3000 // 100km
+                            3000
                     );
                 } else {
                     Toast.makeText(MainActivity.this, "현재 위치 정보를 가져오는 중입니다.", Toast.LENGTH_SHORT).show();
@@ -197,7 +166,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        // 6. [근처 병원] 버튼 클릭
         btnNearbyHospital.setOnClickListener(v -> {
             if (nearbySearchManager != null && mapManager != null) {
                 if (currentLatLng != null) {
@@ -205,7 +173,7 @@ public class MainActivity extends AppCompatActivity {
                             mapManager.getSafetyList(),
                             currentLatLng,
                             NearbySearchManager.TYPE_HOSPITAL,
-                            3000 // 100km
+                            3000
                     );
                 } else {
                     Toast.makeText(MainActivity.this, "현재 위치 정보를 가져오는 중입니다.", Toast.LENGTH_SHORT).show();
@@ -213,7 +181,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        // 7. 돋보기 검색 버튼
         ivSearchIcon.setOnClickListener(v -> {
             String keyword = etSearch.getText().toString().trim();
             if (mapManager == null) return;
@@ -223,27 +190,108 @@ public class MainActivity extends AppCompatActivity {
             }
 
             if (!keyword.isEmpty()) {
+                mapManager.clearMarkers();
                 mapManager.searchAndMoveToGu(keyword);
             } else {
                 mapManager.clearGuFilter();
+                mapManager.clearMarkers();
                 Toast.makeText(MainActivity.this, "전체 지역을 표시합니다.", Toast.LENGTH_SHORT).show();
             }
         });
     }
 
-    // ★ 병원 세부 카테고리를 처리하는 메서드 추가
-    private void loadHospitalData(String subCategory) {
-        Toast.makeText(MainActivity.this, subCategory + " 데이터를 불러옵니다.", Toast.LENGTH_SHORT).show();
+    private void setupDrawerMenu() {
+        Button btnFireStation = findViewById(R.id.btn_fire_station);
+        Button btnSafetyCenter = findViewById(R.id.btn_safety_center);
+        Button btnHospitalMain = findViewById(R.id.btn_hospital_main);
+        layoutHospitalSub = findViewById(R.id.layout_hospital_sub);
 
-        if (mapManager != null) {
-            // mapManager 내부에 파이어베이스 또는 JSON에서 진료과에 맞게
-            // 데이터를 불러오는 로직(예: mapManager.setCategory("hospital_" + subCategory))을
-            // 구현해주시면 됩니다.
-            // mapManager.setCategory("hospital_" + subCategory);
+        Button btnSubGeneral = findViewById(R.id.btn_sub_general);
+        Button btnSubDental = findViewById(R.id.btn_sub_dental);
+        Button btnSubPediatrics = findViewById(R.id.btn_sub_pediatrics);
+        Button btnSubInternal = findViewById(R.id.btn_sub_internal);
+        Button btnSubOrtho = findViewById(R.id.btn_sub_ortho);
+        Button btnSubOphthal = findViewById(R.id.btn_sub_ophthal);
+        Button btnSubAnpa = findViewById(R.id.btn_sub_anpa);
+        Button btnSubDerma = findViewById(R.id.btn_sub_derma);
+        Button btnSubFamily = findViewById(R.id.btn_sub_family);
+        Button btnSubGs = findViewById(R.id.btn_sub_gs);
+        Button btnSubMC = findViewById(R.id.btn_sub_mentalClinic);
+        Button btnSubNs = findViewById(R.id.btn_sub_ns);
+        Button btnSubPs = findViewById(R.id.btn_sub_ps);
+        Button btnSubRadio = findViewById(R.id.btn_sub_radio);
+        Button btnSubEtc = findViewById(R.id.btn_sub_etc);
+        Button btnSubNeuron = findViewById(R.id.btn_sub_neuron);
+        Button btnSubNursing = findViewById(R.id.btn_sub_nursing);
+        Button btnSubRehabilitation = findViewById(R.id.btn_sub_rehabilitation);
+        Button btnSubUro = findViewById(R.id.btn_sub_uro);
+
+        if (btnFireStation != null) {
+            btnFireStation.setOnClickListener(v -> onCategorySelected("소방서", null));
+        }
+
+        if (btnSafetyCenter != null) {
+            btnSafetyCenter.setOnClickListener(v -> onCategorySelected("안전센터", null));
+        }
+
+        if (btnHospitalMain != null) {
+            btnHospitalMain.setOnClickListener(v -> {
+                isHospitalExpanded = !isHospitalExpanded;
+                if (layoutHospitalSub != null) {
+                    layoutHospitalSub.setVisibility(isHospitalExpanded ? View.VISIBLE : View.GONE);
+                }
+                btnHospitalMain.setText(isHospitalExpanded ? "병원 (접기 ▲)" : "병원 (진료과 선택 ▼)");
+            });
+        }
+
+        if (btnSubGeneral != null) btnSubGeneral.setOnClickListener(v -> onCategorySelected("병원", "일반의원"));
+        if (btnSubDental != null) btnSubDental.setOnClickListener(v -> onCategorySelected("병원", "치과"));
+        if (btnSubPediatrics != null) btnSubPediatrics.setOnClickListener(v -> onCategorySelected("병원", "소아청소년과"));
+        if (btnSubInternal != null) btnSubInternal.setOnClickListener(v -> onCategorySelected("병원", "내과"));
+        if (btnSubOrtho != null) btnSubOrtho.setOnClickListener(v -> onCategorySelected("병원", "정형외과"));
+        if (btnSubOphthal != null) btnSubOphthal.setOnClickListener(v -> onCategorySelected("병원", "안과"));
+        if (btnSubAnpa != null) btnSubAnpa.setOnClickListener(v -> onCategorySelected("병원", "마취통증의학과"));
+        if (btnSubDerma != null) btnSubDerma.setOnClickListener(v -> onCategorySelected("병원", "피부과"));
+        if (btnSubFamily != null) btnSubFamily.setOnClickListener(v -> onCategorySelected("병원", "가정의학과"));
+        if (btnSubGs != null) btnSubGs.setOnClickListener(v -> onCategorySelected("병원", "외과"));
+        if (btnSubMC != null) btnSubMC.setOnClickListener(v -> onCategorySelected("병원", "정신건강의학과"));
+        if (btnSubNeuron != null) btnSubNeuron.setOnClickListener(v -> onCategorySelected("병원", "신경과"));
+        if (btnSubNs != null) btnSubNs.setOnClickListener(v -> onCategorySelected("병원", "신경외과"));
+        if (btnSubNursing != null) btnSubNursing.setOnClickListener(v -> onCategorySelected("병원", "요양병원"));
+        if (btnSubPs != null) btnSubPs.setOnClickListener(v -> onCategorySelected("병원", "성형외과"));
+        if (btnSubRadio != null) btnSubRadio.setOnClickListener(v -> onCategorySelected("병원", "영상의학과"));
+        if (btnSubEtc != null) btnSubEtc.setOnClickListener(v -> onCategorySelected("병원", "기타(흉부외과, 방사선과)"));
+        if (btnSubRehabilitation != null) btnSubRehabilitation.setOnClickListener(v -> onCategorySelected("병원", "재활의학과"));
+        if (btnSubUro != null) btnSubUro.setOnClickListener(v -> onCategorySelected("병원", "비뇨의학과"));
+
+    }
+
+    private void onCategorySelected(String mainCategory, String subCategory) {
+        if (mainCategory.equals("소방서")) {
+            if (mapManager != null) {
+                mapManager.setCategory("fire_station");
+                Toast.makeText(this, "소방서를 표시합니다.", Toast.LENGTH_SHORT).show();
+            }
+        } else if (mainCategory.equals("안전센터")) {
+            if (mapManager != null) {
+                mapManager.setCategory("safety_center");
+                Toast.makeText(this, "안전센터/구조대를 표시합니다.", Toast.LENGTH_SHORT).show();
+            }
+        } else if (mainCategory.equals("병원")) {
+            loadHospitalData(subCategory);
+        }
+
+        if (drawerLayout != null) {
+            drawerLayout.closeDrawer(GravityCompat.START);
         }
     }
 
-    /* 위치 권한 및 GPS 제어 로직 */
+    private void loadHospitalData(String subCategory) {
+        Intent intent = new Intent(MainActivity.this, HospitalSearchActivity.class);
+        intent.putExtra("DEPARTMENT_NAME", subCategory);
+        startActivity(intent);
+    }
+
     private void checkLocationPermission(){
         if(ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED){
