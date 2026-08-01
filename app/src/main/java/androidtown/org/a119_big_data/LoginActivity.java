@@ -72,12 +72,16 @@ public class LoginActivity extends AppCompatActivity {
         googleSignInClient = GoogleSignIn.getClient(this, gso);
 
         // 구글 로그인 화면 결과 처리 런처
+        // 구글 로그인 화면 결과 처리 런처 수정
         googleSignInLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
                 result -> {
+                    // 어떤 결과 코드가 반환되었는지 확인하기 위한 로그
                     if (result.getResultCode() == RESULT_OK) {
                         Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(result.getData());
                         handleGoogleSignInResult(task);
+                    } else {
+                        Toast.makeText(this, "구글 로그인 취소 또는 실패 (Result Code: " + result.getResultCode(), Toast.LENGTH_LONG).show();
                     }
                 }
         );
@@ -136,6 +140,7 @@ public class LoginActivity extends AppCompatActivity {
         userData.put("provider", provider);
         userData.put("lastLogin", FieldValue.serverTimestamp());
 
+
         db.collection("Users").document(email)
                 .set(userData, SetOptions.merge())
                 .addOnSuccessListener(aVoid -> {
@@ -146,6 +151,7 @@ public class LoginActivity extends AppCompatActivity {
                     Toast.makeText(this, "데이터베이스 저장 실패: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 });
     }
+
     // 메인 화면으로 이동하는 공통 메서드
     private void navigateToMain() {
         Intent intent = new Intent(LoginActivity.this, MainActivity.class);
