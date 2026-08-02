@@ -39,11 +39,6 @@
         <activity
             android:name=".MainActivity"
             android:exported="true">
-
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
         <activity
             android:name=".HospitalSearchActivity"/>
@@ -62,5 +57,9 @@
 
         </activity>
     </application>
+
+    <queries>
+        <package android:name="com.google.android.gms" />
+    </queries>
 
 </manifest>

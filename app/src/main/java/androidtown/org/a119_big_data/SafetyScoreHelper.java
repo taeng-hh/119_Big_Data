@@ -47,7 +47,7 @@ public class SafetyScoreHelper {
 
     public static SafetyResult getScoreData(Context context, String keyword) {
         try{
-            InputStream is = context.getAssets().open("safety_scores.json");
+            InputStream is = context.getAssets().open("all_safety_scores.json");
             int size = is.available();
             byte[] buffer = new byte[size];
             is.read(buffer);

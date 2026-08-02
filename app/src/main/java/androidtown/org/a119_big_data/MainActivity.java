@@ -110,7 +110,12 @@ public class MainActivity extends AppCompatActivity {
             isMyLocationVisible = true;
 
             if (locationMarkerManager != null) {
-                locationMarkerManager.moveToCurrentLocation();
+                // 만약 이미 위치 좌표를 알고 있다면 버튼 누를 때 즉시 마커 업데이트 및 카메라 이동 수행
+                if (currentLatLng != null) {
+                    locationMarkerManager.updateLocation(currentLatLng.latitude, currentLatLng.longitude, true);
+                } else {
+                    locationMarkerManager.moveToCurrentLocation();
+                }
             } else {
                 checkLocationPermission();
             }
@@ -374,6 +379,22 @@ public class MainActivity extends AppCompatActivity {
 
         if(locationMarkerManager != null && isMyLocationVisible){
             locationMarkerManager.updateLocation(lat, lng, false);
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (mapView != null) {
+            mapView.resume();
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (mapView != null) {
+            mapView.pause();
         }
     }
 

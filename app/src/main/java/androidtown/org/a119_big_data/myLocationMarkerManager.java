@@ -33,11 +33,10 @@ public class myLocationMarkerManager {
         currentPosition = LatLng.from(lat, lng);
         LabelLayer layer = kakaoMap.getLabelManager().getLayer();
 
-        // 1. 파란 점 마커가 아직 지도에 없으면 새로 생성
+
         if (myLocationLabel == null) {
-            // ★ 주의: R.drawable.ic_blue_dot 파일은 반드시 .png 파일이어야 합니다!
-            LabelStyle style = LabelStyle.from(android.R.drawable.btn_star_big_on)
-                    .setAnchorPoint(0.5f, 0.5f); // 중심점을 이미지의 정중앙으로 설정
+            LabelStyle style = LabelStyle.from(R.drawable.ic_star)
+                    .setAnchorPoint(0.5f, 0.5f);
 
             LabelStyles styles = kakaoMap.getLabelManager().addLabelStyles(LabelStyles.from(style));
 

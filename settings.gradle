@@ -14,15 +14,17 @@ pluginManagement {
 plugins {
     id 'org.gradle.toolchains.foojay-resolver-convention' version '1.0.0'
 }
+
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
-        google()
+        google() // 👈 여기에 구글 저장소가 잘 선언되어 있습니다.
         mavenCentral()
         maven { url = uri("https://devrepo.kakao.com/nexus/repository/kakaomap-releases/") }
-        maven {url 'https://devrepo.kakao.com/nexus/content/groups/public/'}
+        maven { url 'https://devrepo.kakao.com/nexus/content/groups/public/' }
     }
-
-    rootProject.name = "119_Big_Data"
-    include ':app'
 }
+
+// rootProject와 include는 반드시 dependencyResolutionManagement 바깥에 있어야 합니다!
+rootProject.name = "119_Big_Data"
+include ':app'
