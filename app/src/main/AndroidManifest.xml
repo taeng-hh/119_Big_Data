@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools">
+    xmlns:tools="http://schemas.android.com/tools"
+    package="androidtown.org.a119_big_data">
 
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
     <uses-permission android:name="android.permission.INTERNET" />
@@ -17,9 +18,16 @@
         android:theme="@style/Theme.A119_Big_Data"
         tools:targetApi="34"
         android:hardwareAccelerated="true">
+
+        <!-- 카카오 앱 키 -->
         <meta-data
             android:name="com.kakao.sdk.AppKey"
             android:value="5d3f0a47bed40fc0f67ef9c052865514" />
+
+        <!-- [추가됨] 구글 지도(Maps SDK) API 키 등록 위치 -->
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyA-MhneGeAb4f-XPgsun8Kgh_qIS-rLVPE" />
 
         <activity
             android:name=".SplashActivity"
@@ -30,7 +38,7 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        
+
         <activity
             android:name=".LoginActivity"
             android:exported="true"
@@ -42,6 +50,7 @@
         </activity>
         <activity
             android:name=".HospitalSearchActivity"/>
+
         <activity
             android:name="com.kakao.sdk.auth.AuthCodeHandlerActivity"
             android:exported="true">
@@ -53,8 +62,6 @@
                     android:scheme="kakao5d3f0a47bed40fc0f67ef9c052865514"
                     android:host = "oauth"/>
             </intent-filter>
-
-
         </activity>
     </application>
 

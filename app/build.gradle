@@ -9,7 +9,7 @@ android {
     defaultConfig {
         applicationId "androidtown.org.a119_big_data"
         minSdk 26
-        targetSdk 34
+        targetSdk 36 // compileSdk와 버전을 일치시킴
         versionCode 1
         versionName "1.0"
 
@@ -33,23 +33,21 @@ android {
 }
 
 dependencies {
-    dependencies {
-        implementation libs.appcompat
-        implementation libs.material
-        implementation libs.activity
-        implementation libs.constraintlayout
-        testImplementation libs.junit
-        androidTestImplementation libs.ext.junit
-        androidTestImplementation libs.espresso.core
+    implementation libs.appcompat
+    implementation libs.material
+    implementation libs.activity
+    implementation libs.constraintlayout
+    testImplementation libs.junit
+    androidTestImplementation libs.ext.junit
+    androidTestImplementation libs.espresso.core
 
-        // 카카오맵 및 카카오 SDK 유지
-        implementation "com.kakao.maps.open:android:2.13.5"
-        implementation "com.kakao.sdk:v2-user:2.20.0"
+    // 카카오맵 및 카카오 SDK
+    implementation "com.kakao.maps.open:android:2.13.5"
+    implementation "com.kakao.sdk:v2-user:2.20.0"
 
-        // 구글 및 파이어베이스 의존성을 버전을 고정한 형태로 교체
-        implementation 'com.google.android.gms:play-services-location:21.2.0'
-        implementation 'com.google.android.gms:play-services-auth:21.0.0'
-        implementation 'com.google.firebase:firebase-database:20.3.1'
-        implementation 'com.google.firebase:firebase-firestore:25.1.0'
-    }
+    // 구글 및 파이어베이스 의존성
+    implementation 'com.google.android.gms:play-services-location:21.2.0'
+    implementation 'com.google.android.gms:play-services-auth:21.0.0'
+    implementation 'com.google.firebase:firebase-database:20.3.1'
+    implementation 'com.google.firebase:firebase-firestore:25.1.0'
 }

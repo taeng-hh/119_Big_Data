@@ -49,7 +49,6 @@ public class MainActivity extends AppCompatActivity {
     private Button btnNearbyFireStation;
     private Button btnNearbySafetyCenter;
     private Button btnNearbyHospital;
-    private Button btnOpenMenu;
 
     private ImageButton btnMyLocation;
     private EditText etSearch;
@@ -63,6 +62,8 @@ public class MainActivity extends AppCompatActivity {
     private DrawerLayout drawerLayout;
     private GridLayout layoutHospitalSub;
     private boolean isHospitalExpanded = false;
+
+    private SavedPlace currentSelectedPlace;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,6 +89,30 @@ public class MainActivity extends AppCompatActivity {
 
         setupDrawerMenu();
 
+        // 팝업 카드 내 저장 버튼(별 모양) 연결
+        ImageButton btnSavePlace = findViewById(R.id.btnSavedPlace);
+        if (btnSavePlace != null) {
+            btnSavePlace.setOnClickListener(v -> {
+                if (currentSelectedPlace != null) {
+                    PlaceManager.savePlace(MainActivity.this, currentSelectedPlace);
+                    Toast.makeText(MainActivity.this, "✨ '" + currentSelectedPlace.name + "' 지역이 저장되었습니다!", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(MainActivity.this, "저장할 지역 정보가 없습니다.", Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
+
+        // 팝업 카드 내 닫기(X) 버튼 연결
+        ImageButton btnClosePopup = findViewById(R.id.btnClosePopup);
+        androidx.cardview.widget.CardView cardSafetyInfo = findViewById(R.id.card_safety_info);
+        if (btnClosePopup != null) {
+            btnClosePopup.setOnClickListener(v -> {
+                if (cardSafetyInfo != null) {
+                    cardSafetyInfo.setVisibility(View.GONE);
+                }
+            });
+        }
+
         mapView.start(new MapLifeCycleCallback() {
             @Override
             public void onMapDestroy() {}
@@ -110,7 +135,6 @@ public class MainActivity extends AppCompatActivity {
             isMyLocationVisible = true;
 
             if (locationMarkerManager != null) {
-                // 만약 이미 위치 좌표를 알고 있다면 버튼 누를 때 즉시 마커 업데이트 및 카메라 이동 수행
                 if (currentLatLng != null) {
                     locationMarkerManager.updateLocation(currentLatLng.latitude, currentLatLng.longitude, true);
                 } else {
@@ -194,41 +218,60 @@ public class MainActivity extends AppCompatActivity {
                 nearbySearchManager.clearNearbyMarkers();
             }
 
-            androidx.cardview.widget.CardView cardSafetyInfo = findViewById(R.id.card_safety_info);
-
             if (!keyword.isEmpty()) {
                 if (mapManager != null) {
                     mapManager.clearMarkers();
                     mapManager.searchAndMoveToGu(keyword);
                 }
-                MapDrawHelper.moveToRegion(kakaoMap, MainActivity.this, keyword);
 
-                SafetyScoreHelper.SafetyResult result = SafetyScoreHelper.getScoreData(MainActivity.this, keyword);
+                MapDrawHelper.searchAndDrawRegion(kakaoMap, MainActivity.this, keyword, (regionName, allBoundaryCoords) -> {
 
-                if(result != null){
-                    android.widget.TextView tvRegionName = findViewById(R.id.tv_region_name);
-                    android.widget.TextView tvSafetyScore = findViewById(R.id.tv_safety_score);
-                    android.widget.TextView tvSafetyReasons = findViewById(R.id.tv_safety_reasons);
+                    // 1. 빨간 테두리 + 연한 분홍색 면들을 지도에 일괄 그리기
+                    RegionBoundaryManager boundaryManager = new RegionBoundaryManager(MainActivity.this, kakaoMap);
+                    boundaryManager.drawRegionBoundary(allBoundaryCoords);
 
-                    tvRegionName.setText("[" + result.type + "] " + result.name);
-                    tvSafetyScore.setText(String.format("안전 점수: %.2f점", result.score));
+                    // 2. 안전 점수 및 통계 데이터 가져오기
+                    SafetyScoreHelper.SafetyResult result = SafetyScoreHelper.getScoreData(MainActivity.this, keyword);
 
-                    String reasonText = String.format(
-                            "• 총평: %s\\n• 화재 발생 건수: %d건\\n• 소방용수 인프라: %d개\\n• 승강기/교통사고: %d건\\n",
-                            result.evaluation, result.fireCount, result.waterCount, result.elevatorTrafficCount
-                    );
-                    tvSafetyReasons.setText(reasonText);
+                    if (result != null) {
+                        android.widget.TextView tvRegionName = findViewById(R.id.tv_region_name);
+                        android.widget.TextView tvSafetyScore = findViewById(R.id.tv_safety_score);
+                        android.widget.TextView tvSafetyReasons = findViewById(R.id.tv_safety_reasons);
 
-                    cardSafetyInfo.setVisibility(View.VISIBLE);
-                }else {
-                    cardSafetyInfo.setVisibility(View.GONE);
-                    Toast.makeText(MainActivity.this, "해당 지역의 분석 결과를 찾을 수 없습니다.", Toast.LENGTH_SHORT).show();
-                }
-            }else {
-                if(mapManager != null) {
+                        tvRegionName.setText("[" + result.type + "] " + result.name);
+                        tvSafetyScore.setText(String.format("안전 점수: %.2f점", result.score));
+
+                        String reasonText = String.format(
+                                "• 총평: %s\n• 화재 발생 건수: %d건\n• 승강기/교통사고: %d건\n• 소방용수 인프라: %d개",
+                                result.evaluation, result.fireCount, result.elevatorTrafficCount, result.waterCount
+                        );
+                        tvSafetyReasons.setText(reasonText);
+
+                        currentSelectedPlace = new SavedPlace(
+                                result.name,
+                                "안전 정보 지역",
+                                "안전 점수: " + result.score + "점 (" + result.evaluation + ")"
+                        );
+
+                        cardSafetyInfo.setVisibility(View.VISIBLE);
+                    } else {
+                        currentSelectedPlace = null;
+                        cardSafetyInfo.setVisibility(View.GONE);
+                        Toast.makeText(MainActivity.this, "해당 지역의 분석 결과를 찾을 수 없습니다.", Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+            } else {
+
+                if (mapManager != null) {
                     mapManager.clearGuFilter();
                     mapManager.clearMarkers();
                 }
+
+                RegionBoundaryManager boundaryManager = new RegionBoundaryManager(MainActivity.this, kakaoMap);
+                boundaryManager.clearBoundary();
+
+                currentSelectedPlace = null;
                 cardSafetyInfo.setVisibility(View.GONE);
                 Toast.makeText(MainActivity.this, "전체 지역을 표시합니다.", Toast.LENGTH_SHORT).show();
             }
@@ -252,12 +295,12 @@ public class MainActivity extends AppCompatActivity {
         Button btnSubFamily = findViewById(R.id.btn_sub_family);
         Button btnSubGs = findViewById(R.id.btn_sub_gs);
         Button btnSubMC = findViewById(R.id.btn_sub_mentalClinic);
+        Button btnSubNeuron = findViewById(R.id.btn_sub_neuron);
         Button btnSubNs = findViewById(R.id.btn_sub_ns);
+        Button btnSubNursing = findViewById(R.id.btn_sub_nursing);
         Button btnSubPs = findViewById(R.id.btn_sub_ps);
         Button btnSubRadio = findViewById(R.id.btn_sub_radio);
         Button btnSubEtc = findViewById(R.id.btn_sub_etc);
-        Button btnSubNeuron = findViewById(R.id.btn_sub_neuron);
-        Button btnSubNursing = findViewById(R.id.btn_sub_nursing);
         Button btnSubRehabilitation = findViewById(R.id.btn_sub_rehabilitation);
         Button btnSubUro = findViewById(R.id.btn_sub_uro);
 
@@ -298,7 +341,6 @@ public class MainActivity extends AppCompatActivity {
         if (btnSubEtc != null) btnSubEtc.setOnClickListener(v -> onCategorySelected("병원", "기타(흉부외과, 방사선과)"));
         if (btnSubRehabilitation != null) btnSubRehabilitation.setOnClickListener(v -> onCategorySelected("병원", "재활의학과"));
         if (btnSubUro != null) btnSubUro.setOnClickListener(v -> onCategorySelected("병원", "비뇨의학과"));
-
     }
 
     private void onCategorySelected(String mainCategory, String subCategory) {

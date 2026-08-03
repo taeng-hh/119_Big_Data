@@ -50,14 +50,14 @@
                 android:src="@drawable/ic_menu"
                 app:tint="#6B3532" />
 
-            <!-- 검색 입력창: 남은 공간 전체 사용 -->
+            <!-- 검색 입력창 -->
             <EditText
                 android:id="@+id/et_search"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:background="@android:color/transparent"
-                android:hint="장소, 주소 검색"
+                android:hint="행정구, 행정동 검색 (예: 종로구, 사직동)"
                 android:importantForAutofill="no"
                 android:inputType="text"
                 android:paddingStart="6dp"
@@ -172,62 +172,114 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 
+        <!-- 안전 정보 및 상세 통계 팝업 카드 -->
         <androidx.cardview.widget.CardView
             android:id="@+id/card_safety_info"
-            android:layout_width="220dp"
+            android:layout_width="260dp"
             android:layout_height="wrap_content"
             android:layout_marginEnd="16dp"
             android:layout_marginTop="80dp"
-            app:cardCornerRadius="12dp"
+            app:cardCornerRadius="14dp"
             app:cardElevation="8dp"
             app:cardBackgroundColor="#F8FAFC"
             android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent">
-            
-            <LinearLayout
+
+            <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
                 android:padding="16dp">
-                
-                <TextView
-                    android:id="@+id/tv_region_name"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="지역명"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    android:textColor="#1E293B"/>
-                
-                <TextView
-                    android:id="@+id/tv_safety_score"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="6dp"
-                    android:text="안전점수 : 00.0점"
-                    android:textSize="18sp"
-                    android:textStyle="bold"
-                    android:textColor="#D32F2F"/>
 
-                <View
+                <!-- 닫기(X) 버튼 -->
+                <ImageButton
+                    android:id="@+id/btnClosePopup"
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
+                    android:layout_alignParentTop="true"
+                    android:layout_alignParentEnd="true"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="닫기"
+                    android:src="@android:drawable/ic_menu_close_clear_cancel"
+                    app:tint="#64748B" />
+
+                <!-- 내용 컨테이너 -->
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="[평가 및 산출 이유]"
-                    android:textSize="13sp"
-                    android:textStyle="bold"
-                    android:textColor="#475569" />
-                
-                <TextView
-                    android:id="@+id/tv_safety_reasons"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:text="세부 요인 분석 중 .. "
-                    android:textSize="12sp"
-                    android:textColor="#64748B"
-                    android:lineSpacingExtra="3dp"/>
-            </LinearLayout>
+                    android:orientation="vertical"
+                    android:layout_toStartOf="@id/btnClosePopup"
+                    android:layout_alignParentStart="true">
+
+                    <TextView
+                        android:id="@+id/tv_region_name"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="지역명"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:textColor="#1E293B"/>
+
+                    <TextView
+                        android:id="@+id/tv_safety_score"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:text="안전점수 : 00.0점"
+                        android:textSize="17sp"
+                        android:textStyle="bold"
+                        android:textColor="#D32F2F"/>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="#E2E8F0"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginBottom="8dp"/>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="[평가 및 산출 요인]"
+                        android:textSize="12sp"
+                        android:textStyle="bold"
+                        android:textColor="#475569" />
+
+                    <TextView
+                        android:id="@+id/tv_safety_reasons"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:text="• 화재 발생 건수: 0건\n• 승강기/교통사고: 0건\n• 소방용수 인프라: 0개"
+                        android:textSize="12sp"
+                        android:textColor="#64748B"
+                        android:lineSpacingExtra="4dp"/>
+
+                    <!-- 동그란 별 모양 저장 버튼 -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="end"
+                        android:layout_marginTop="12dp">
+
+                        <ImageButton
+                            android:id="@+id/btnSavedPlace"
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            android:background="@drawable/bg_location_button"
+                            android:backgroundTint="#D32F2F"
+                            android:contentDescription="이 지역 저장하기"
+                            android:elevation="4dp"
+                            android:outlineProvider="background"
+                            android:padding="8dp"
+                            android:scaleType="fitCenter"
+                            android:src="@android:drawable/btn_star_big_on"
+                            app:tint="@android:color/white" />
+                    </LinearLayout>
+
+                </LinearLayout>
+
+            </RelativeLayout>
         </androidx.cardview.widget.CardView>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
