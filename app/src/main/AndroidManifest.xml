@@ -22,6 +22,10 @@
             android:value="5d3f0a47bed40fc0f67ef9c052865514" />
 
         <activity
+            android:name=".DistrictRiskActivity"
+            android:exported="false" />
+
+        <activity
             android:name=".SplashActivity"
             android:exported="true"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar">

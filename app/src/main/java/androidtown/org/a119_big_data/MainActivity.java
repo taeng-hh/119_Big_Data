@@ -236,6 +236,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setupDrawerMenu() {
+        Button btnDistrictRisk = findViewById(R.id.btn_district_risk);
         Button btnFireStation = findViewById(R.id.btn_fire_station);
         Button btnSafetyCenter = findViewById(R.id.btn_safety_center);
         Button btnHospitalMain = findViewById(R.id.btn_hospital_main);
@@ -260,6 +261,15 @@ public class MainActivity extends AppCompatActivity {
         Button btnSubNursing = findViewById(R.id.btn_sub_nursing);
         Button btnSubRehabilitation = findViewById(R.id.btn_sub_rehabilitation);
         Button btnSubUro = findViewById(R.id.btn_sub_uro);
+
+        if (btnDistrictRisk != null) {
+            btnDistrictRisk.setOnClickListener(v -> {
+                if (drawerLayout != null) {
+                    drawerLayout.closeDrawer(GravityCompat.START);
+                }
+                startActivity(new Intent(MainActivity.this, DistrictRiskActivity.class));
+            });
+        }
 
         if (btnFireStation != null) {
             btnFireStation.setOnClickListener(v -> onCategorySelected("소방서", null));

@@ -24,6 +24,13 @@
         android:textColor="#333333"
         android:layout_marginBottom="16dp"/>
 
+    <!--위험도 추천 버튼-->
+    <Button
+        android:id="@+id/btn_district_risk"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="지역별 위험도" />
+
     <!-- 소방서 버튼 -->
     <Button
         android:id="@+id/btn_fire_station"

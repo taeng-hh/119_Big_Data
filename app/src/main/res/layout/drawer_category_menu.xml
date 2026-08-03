@@ -13,7 +13,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop = "24dp"
         android:layout_marginBottom="20dp"
-        android:text="지도 카테고리 선택"
+        android:text="안전 정보 메뉴"
         android:textColor="#333333"
         android:textSize="20sp"
         android:textStyle="bold"/>
@@ -27,6 +27,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_district_risk"
+                style="@style/MainCategoryButton"
+                android:text="추천 구 · 위험도 순위" />
 
             <!-- 소방서 버튼 -->
             <com.google.android.material.button.MaterialButton

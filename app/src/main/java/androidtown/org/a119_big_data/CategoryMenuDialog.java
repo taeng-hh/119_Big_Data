@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.GridLayout;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
+import android.content.Intent;
 
 public class CategoryMenuDialog extends BottomSheetDialogFragment {
 
@@ -29,6 +30,7 @@ public class CategoryMenuDialog extends BottomSheetDialogFragment {
         Button btnFireStation = view.findViewById(R.id.btn_fire_station);
         Button btnSafetyCenter = view.findViewById(R.id.btn_safety_center);
         Button btnHospitalMain = view.findViewById(R.id.btn_hospital_main);
+        Button btnDistrictRisk = view.findViewById(R.id.btn_district_risk);
         layoutHospitalSub = view.findViewById(R.id.layout_hospital_sub);
 
         Button btnSubGeneral = view.findViewById(R.id.btn_sub_general);
@@ -52,7 +54,11 @@ public class CategoryMenuDialog extends BottomSheetDialogFragment {
 
         btnFireStation.setOnClickListener(v -> sendSelection("소방서", null));
         btnSafetyCenter.setOnClickListener(v -> sendSelection("안전센터", null));
-
+        btnDistrictRisk.setOnClickListener(v -> {
+            Intent intent = new Intent(requireContext(), DistrictRiskActivity.class);
+            startActivity(intent);
+            dismiss();
+        });
         btnHospitalMain.setOnClickListener(v -> {
             isHopitalExpanded = !isHopitalExpanded;
             layoutHospitalSub.setVisibility(isHopitalExpanded ? View.VISIBLE : View.GONE);
