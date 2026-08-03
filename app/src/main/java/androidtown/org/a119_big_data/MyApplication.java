@@ -7,6 +7,6 @@ public class MyApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        KakaoMapSdk.init(this, "5d3f0a47bed40fc0f67ef9c052865514");
+        KakaoMapSdk.init(this, "cc76924995f59841ce76e2bb75d39a65");
     }
 }

@@ -68,7 +68,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        KakaoMapSdk.init(this, "5d3f0a47bed40fc0f67ef9c052865514");
+        KakaoMapSdk.init(this, "cc76924995f59841ce76e2bb75d39a65");
         setContentView(R.layout.activity_main);
 
         drawerLayout = findViewById(R.id.drawer_layout);

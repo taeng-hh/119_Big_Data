@@ -39,7 +39,7 @@ public class HospitalSearchActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        KakaoMapSdk.init(this, "5d3f0a47bed40fc0f67ef9c052865514");
+        KakaoMapSdk.init(this, "cc76924995f59841ce76e2bb75d39a65");
         setContentView(R.layout.activity_hospital_search);
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
