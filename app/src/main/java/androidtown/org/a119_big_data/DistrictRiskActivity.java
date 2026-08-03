@@ -39,11 +39,11 @@ public class DistrictRiskActivity extends AppCompatActivity {
         try {
             List<JSONObject> districts = loadDistricts();
 
-            // 위험도 = 100 - 안전 점수이므로, 안전 점수가 낮은 지역이 먼저입니다.
+            // 추천 순위이므로 안전 점수가 높은 지역부터 표시합니다.
             districts.sort(Comparator.comparingDouble(
                     (JSONObject item) ->
                             item.optDouble("predicted_safety_score", 0.0)
-            ));
+            ).reversed());
 
             List<String> ranking = new ArrayList<>();
 
@@ -51,14 +51,13 @@ public class DistrictRiskActivity extends AppCompatActivity {
                 JSONObject item = districts.get(i);
 
                 double safetyScore = item.getDouble("predicted_safety_score");
-                double riskScore = Math.max(0.0, Math.min(100.0, 100.0 - safetyScore));
 
                 ranking.add(String.format(
                         Locale.KOREA,
-                        "%d위  %s   위험도 %.2f점",
+                        "%d위  %s   안전 점수 %.2f점",
                         i + 1,
                         item.getString("district"),
-                        riskScore
+                        safetyScore
                 ));
             }
 

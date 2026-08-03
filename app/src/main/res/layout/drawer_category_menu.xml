@@ -31,7 +31,7 @@
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn_district_risk"
                 style="@style/MainCategoryButton"
-                android:text="추천 구 · 위험도 순위" />
+                android:text="추천 구 · 안전 순위" />
 
             <!-- 소방서 버튼 -->
             <com.google.android.material.button.MaterialButton

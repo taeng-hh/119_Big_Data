@@ -25,7 +25,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="추천 구 · 위험도 순위"
+            android:text="추천 구 · 안전 순위"
             android:textColor="#332321"
             android:textSize="21sp"
             android:textStyle="bold" />
@@ -39,7 +39,7 @@
         android:layout_marginBottom="14dp"
         android:background="@drawable/bg_risk_notice"
         android:padding="14dp"
-        android:text="위험도가 높은 구부터 표시합니다.\n위험도 = 100 - 안전 점수"
+        android:text="안전 점수가 높은 구부터 추천합니다."
         android:textColor="#6B3532"
         android:textSize="14sp" />
 
